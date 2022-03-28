@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git for Windows v2.34.1 릴리스 노트</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body class="details">
+    <div class="links">
+        <ul>
+            <li>
+                <a href="https://gitforwindows.org/">홈페이지</a>
+            </li>
+            <li>
+                <a href="https://github.com/git-for-windows/git/wiki/FAQ">faq</a>
+            </li>
+            <li>
+                <a href="https://gitforwindows.org/#contribute">기여하기</a>
+            </li>
+            <li>
+                <a href="mailto:git@vger.kernel.org">문의하기</a>
+            </li>
+        </ul>
+        <div id="git-for-windows-logo">
+            <div id="left-pane"></div>
+            <div id="top-pane"></div>
+            <div id="right-pane"></div>
+            <div id="bottom-pane"></div>
+            <div id="diagonal-pipe"></div>
+            <div id="vertical-pipe"></div>
+            <div id="top-ball"></div>
+            <div id="bottom-ball"></div>
+            <div id="right-ball"></div>
+        </div>
+    </div>
+    <div class="content">
+        <h1>Git for Windows v2.34.1 릴리스 노트</h1>
+        <p>최근 업데이트 날짜: 2021년 11월 25일</p>
+        <h2>소개</h2>
+        <p>본 릴리스 노트는 Git for Windows 릴리스의 이슈를 설명합니다. Core Git 명령어의 이력을 다룬 릴리스 노트는 <a href="https://github.com/git/git/tree/HEAD/Documentation/RelNotes">Git project</a>에서 확인할 수 있습니다.</p>
+        <p>타 운영 체제별 포트를 비롯하여 Git에 대한 자세한 내용은 <a href="http://git-scm.com/">http://git-scm.com/</a>를 참조하세요. Git for Windows는 <a href="https://gitforwindows.org/">https://gitforwindows.org/</a>에서 호스팅 됩니다.</p>
+
+        <h1 id="known-issues" class="collapsible">알려진 문제</h1>
+        <ul>
+            <li>1703 이전의 Windows 10 상태에서 또는 개발자 모드가 꺼진 상태에서 symbolic link가 있는 저장소를 clone하려면 특별한 권한이 필요하므로 symbolic link 지원은 기본값으로 사용하지 않습니다. <code>git clone -c core.symlinks=true &lt;URL&gt;</code>를 사용하여 symbolic link 지원을 기본값으로 사용할 수 있으며, 자세한 내용은 <a href="https://github.com/git-for-windows/git/wiki/Symbolic-Links">해당 내용</a>를 참조하세요.</li>
+            <li>Plink를 사용하도록 설정되었다면 우선 <a href="http://www.chiark.greenend.org.uk/~sgtatham/putty/">putty</a>를 연결하고 호스트 키를 수락해야 합니다.</li>
+            <li>일부 콘솔 프로그램, 특히 non-MSYS2 Python, PHP, Node와 OpenSSL은 <code>winpty</code>를 통해 호출될 때만 MinTTY와 상호 작용합니다(예: Python 콘솔은 <code>python</code>이 아닌 <code>winpty python</code> 명령어로 시작해야 합니다).</li>
+            <li>
+                <p>슬래시로 시작하는 명령줄 옵션을 지정한다면 예를 들어 &quot;<code>/usr/bin/bash.exe</code>&quot;에서 &quot;<code>C:\Program Files\Git\usr\bin\bash.exe</code>&quot;로 변환되며 POSIX에서 Windows로 경로가 변환됩니다. 경로 변환이 바람직하지 않다면(예: &quot;<code>--upload-pack=/opt/git/bin/git-upload-pack</code>&quot; 또는 &quot;<code>-L/regex/</code>&quot;) 환경변수 <code>MSYS_NO_PATHCONV</code>를 다음과 같이 임시로 설정해야 합니다.</p>
+                <blockquote>
+                    <p>
+                        <code>MSYS_NO_PATHCONV=1 git blame -L/pathconv/ msys2_path_conv.cc</code>
+                    </p>
+                </blockquote>
+                <p>또는 첫 번째 슬래시를 연속해서 2개 입력하여 POSIX에서 Windows로의 경로 변환을 막을 수 있습니다(예: &quot;<code>//usr/bin/bash.exe</code>&rdquo;).</p>
+            </li>
+            <li>Windows 드라이브는 일반적으로 POSIX 경로 내에서 <code>/c/path/to/dir/</code>로 인식됩니다. <code>/c/</code>(또는 적절한 드라이브 문자)는 <code>\path\to\dir</code>에 대한 Windows 접두사 <code>C:\</code>와 같습니다. 인식이 되지 않는다면 Windows 스타일인 <code>C:\path\to\dir</code>로 바꾸세요.</li>
+            <li>Git for Windows는 DOS 스타일의 8.3 축약형 파일 이름 커밋을 허용하지 않는데 이때 파일 이름은 물결표와 숫자로 끝나며 <code>mydocu~1.txt</code>와 같습니다. 대안으로 <code>git config core.protectNTFS false</code> 호출이 있지만 권장하지 않습니다. 그 대신 .gitignore에 규칙을 추가해 파일을 무시하거나 파일 이름을 바꾸세요.</li>
+            <li>Windows 탐색기를 포함한 많은 Windows 프로그램에서 tree가 너무 깊이 중첩되어 절대 경로가 260자를 초과하는 문제가 있습니다. 이에 Git for Windows는 기본값으로 이런 파일의 체크 아웃을 거부합니다. <code>core.longPaths</code>를 설정하여 기본 설정을 무효화할 수도 있습니다(예: <code>git clone -c core.longPaths=true ...</code>).</li>
+            <li>일부 명령어는 아직 Windows에서 지원하지 않으며 설치 과정에서 제외합니다.</li>
+            <li>Git for Windows은 Python을 지원하지 않으므로 Python 스크립트가 지원하는 <code>git p4</code>를 지원하지 않습니다.</li>
+            <li>빠른 실행 아이콘은 설치파일을 실행하는 사용자(일반적으로 관리자)에게만 설치됩니다. 기술적으로 제한한 사항이므로 바뀌지 않습니다.</li>
+            <li>이전 버전의 Windows Explorer는 하드 링크를 인식하지 못 하므로 Git for Windows의 디스크 할당 크기를 정확하게 계산하지<em>못 합니다.</em> 따라서 Git for Windows가 1.5GB를 차지한다고 보이겠지만 실제로는 3분의 1 정도만 차지합니다.</li>
+            <li>Git 명령어 힌트는 POSIX shell용으로 만들어졌으므로 <a href="https://github.com/git-for-windows/git/issues/2785">이 티켓에서처럼</a> PowerShell과 같은 non-POSIX shell에서 명령어 힌트를 <strong>있는 그대로</strong> 사용한다면 문제가 발생할 수 있습니다.</li>
+            <li><code>git://</code> 프로토콜로 push할 경우, Git for Windows가 무한정 동작하지 않을 수 있습니다. 이러한 경우 보통 마지막에 <code>Writing objects: 100%</code>라고 콘솔에 출력이 됩니다. <a href="https://github.com/git-for-windows/git/issues/907">#907</a> 문제가 해결될 때까지는 대안으로 이 명령어를 한번 실행해 보세요: <code>git config sendpack.sideband false</code>.</li>
+            <li>
+                <p><code>msys-2.0.dll</code>에 연결된 Git for Windows 실행 파일은 필수 ASLR과 호환되지 않으며 Windows Exploit protection에서 system-wide 필수 ASLR이 활성화된다면 충돌할 수 있습니다. 대안은 <code>C:\Program Files\Git\usr\bin</code>의 모든 실행 파일에 대해 ASLR을 비활성화하고 관리자 powershell에서 실행하는 것입니다 (<code>$_.Name</code>를 <code>$_</code>로 바꿔서 이름 대신에 실행 파일의 전체 경로를 사용하세요.):</p>
+                <blockquote>
+                    <p>
+                        <code>Get-Item -Path &quot;C:\Program Files\Git\usr\bin\*.exe&quot; | %{ Set-ProcessMitigation -Name $_.Name -Disable ForceRelocateImages }</code>
+                    </p>
+                </blockquote>
+                <p>한편 Windows Exploit protection에서 필수 ASLR을 완전히 비활성화할 수 있습니다.</p>
+            </li>
+        </ul>
+        <p>그 밖의 다른 문제가 생기면 우선 <a href="https://github.com/git-for-windows/git/issues">버그 트래커</a>와 <a href="http://groups.google.com/group/git-for-windows">메일링 리스트</a>에서 검색해 보세요(닫힌 이슈도 보세요). 문제가 이미 보고되었을 수도 있습니다. Git for Windows의 최신 버전(또는 <a href="https://wingit.blob.core.windows.net/files/index.html">현재 스냅샷</a>)을 사용하고 있는지도 확인하세요. 버그가 보고되어 있지 않다면 <a href="https://github.com/git-for-windows/git/wiki/Issue-reporting-guidelines">버그 리포팅 가이드라인</a>에 따라 <a href="https://github.com/git-for-windows/git/issues/new">버그를 신고</a>해 주세요.</p>
+
+        <h2 id="licenses" class="collapsible">라이선스</h2>
+        <div>
+            <p>Git은 GNU General Public License 버전 2에 따라 사용이 허가되었습니다.</p>
+            <p>Git for Windows에는 Root CA 인증서가 있습니다. 자세한 내용을 보려면 <a href="https://www.cacert.org/policy/RootDistributionLicense.php">https://www.cacert.org/policy/RootDistributionLicense.php</a>로 이동하세요.</p>
+            <p>패키지에는 Bash, zlib, curl, tcl/tk, perl, MSYS2를 비롯한 여러 다른 프로젝트의 소프트웨어, 라이브러리 및 유틸리티가 있으며 GNU 일반 공중 사용 허가서에 따라 사용이 허가되었습니다. 또한 Perl은 GNU General Public License와 Artistic License에 따라 사용이 허가되었습니다.</p>
+        </div>
+        
+        <h2 id="v2.34.1" class="collapsible">
+            v2.34.0 이후 <a id="latest">v2.34.1</a><br>
+            <small>변경 이력(2021년 11월 15일)</small>
+        </h2>
+        <div>
+            <h3>새로운 기능</h3>
+            <ul>
+                <li><a href="https://github.com/git/git/blob/v2.34.1/Documentation/RelNotes/2.34.1.txt">Git v2.34.1</a>을 제공합니다.</li>
+                <li><a href="https://github.com/microsoft/git-credential-manager-core/releases/tag/v2.0.605">Git Credential Manager Core v2.0.605.12951</a>을 제공합니다.</li>
+                <li><a href="https://curl.haxx.se/changes.html#7_80_0">cURL v7.80.0</a>을 제공합니다.</li>
+            </ul>
+        </div>
+
+        <h2 id="v2.34.0" class="collapsible">
+            v2.33.1 이후 v2.34.0<br>
+            <small>변경 이력(2021년 10월 13일)</small>
+        </h2>
+        <div>
+            <h3>새로운 기능</h3>
+            <ul>
+                <li><a href="https://github.com/git/git/blob/v2.34.0/Documentation/RelNotes/2.34.0.txt">Git v2.34.0</a>을 제공합니다.</li>
+                <li>Git이 설치된 위치에서 상대적인 경로를 참조하는 구성 설정은 이제 <a href="https://github.com/git-for-windows/git/pull/3472"><code>%(prefix)/</code>로 표시되어야 합니다. 선행 슬래시는 더는 사용하지 않습니다.</a></li>
+                <li><a href="https://github.com/git-lfs/git-lfs/releases/tag/v3.0.2">Git LFS v3.0.2</a>에 포함합니다.</li>
+                <li><code>core.fsyncObjectFiles=batch</code>에 대한 <a href="https://github.com/git-for-windows/git/pull/3492">새로운 실험적 기능 지원</a>을 포함합니다.</li>
+            </ul>
+            <h3>버그 수정 사항</h3>
+            <ul>
+                <li>시스템 전체에 VSCode를 Git 에디터로 설정하는 데 <a href="https://github.com/git-for-windows/git/issues/3471">있어 문제를</a> 해결했습니다.</li>
+                <li>이제 <a href="https://git-lfs.github.io/">Git LFS</a>를 통해 전송되는 한 4Gb보다 큰 파일을 <a href="https://github.com/git-for-windows/git/pull/3487">clone할 수 있습니다.</a></li>
+                <li>Git은 이제 <a href="https://github.com/microsoft/terminal/issues/9359">Windows 터미널에서 <code>vi</code>와 잘못된 줄바꿈 문제를 해결했습니다.</a></li>
+            </ul>
+        </div>
+
+        <h2 id="v2.33.1" class="collapsible">
+            v2.33.0(2) 이후 v2.33.1<br>
+            <small>변경 이력(2021년 8월 24일)</small>
+        </h2>
+        <div>
+            <h3>새로운 기능</h3>
+            <ul>
+                <li><a href="https://github.com/git/git/blob/v2.33.1/Documentation/RelNotes/2.33.1.txt">Git v2.33.1</a>을 제공합니다.</li>
+                <li><a href="https://www.openssl.org/news/openssl-1.1.1-notes.html">OpenSSL v1.1.1l</a>을 제공합니다.</li>
+                <li>포함된 <code>git svn</code>은 이제 내부적으로 <a href="https://svn.apache.org/repos/asf/subversion/tags/1.14.1/CHANGES">subversion v1.14.1</a>을 사용합니다.</li>
+                <li><a href="https://github.com/microsoft/Git-Credential-Manager-for-Windows">Git Credential Manager for Windows</a>을 <a href="https://aka.ms/gcmcore">Git Credential Manager Core</a>로 대체합니다. Git Credential Manager for Windows은 더 이상 사용되지 않으며 GitHub 인증이 되지 않습니다. <a href="https://github.com/git-for-windows/build-extra/pull/377">Git for Windows에도 포함되지 않습니다.</a></li>
+                <li><a href="https://curl.haxx.se/changes.html#7_79_1">cURL v7.79.1</a>을 제공합니다.</li>
+                <li><a href="https://www.openssh.com/txt/release-8.8">OpenSSH v8.8p1</a>을 제공합니다.</li>
+                <li><a href="https://github.com/git-lfs/git-lfs/releases/tag/v3.0.1">Git LFS v3.0.1</a>을 제공합니다.</li>
+                <li>built-in filesystem watcher (&quot;FSMonitor&quot;)가<a href="https://github.com/git-for-windows/git/pull/3447">최신 버전으로 업데이트되었습니다.</a></li>
+                <li><a href="https://github.com/microsoft/git-credential-manager-core/releases/tag/v2.0.567">Git Credential Manager Core v2.0.567.18224</a>을 제공합니다.</li>
+            </ul>
+            <h3>버그 수정 사항</h3>
+            <ul>
+                <li>Wordpad를 다시 <a href="https://github.com/git-for-windows/build-extra/pull/378">Git&apos; 기본 에디터로 설정할 수 있습니다.</a></li>
+                <li><code>git pull</code>을 하는 동안 Git의 가비지 컬렉션이 더 이상 쓰이지 않는 파일을 삭제하지 못 하던 버그가 <a href="https://github.com/git-for-windows/git/pull/3415">수정되었습니다.</a></li>
+                <li><code>git svn</code> 명령어가 <a href="https://github.com/git-for-windows/git/issues/3392">Git for Windows v2.33.0(2)에서 깨졌는데</a> 수정되었습니다.</li>
+                <li>SSH를 통해 clone할 때 비밀번호 프롬프트가 <a href="https://github.com/git-for-windows/build-extra/pull/381">다시 작동합니다.</a></li>
+                <li>MSYS2 runtime은 <a href="https://github.com/git-for-windows/msys2-runtime/pull/33"> Windows/ARM64에서 FAST_CWD에 대해 더 이상 경고하지 않습니다.</a></li>
+                <li>VS Code가 에디터로 설정하면 <a href="https://github.com/git-for-windows/git/issues/3452">창을 닫을 필요 없이 탭만 닫으면 됩니다.</a></li>
+                <li>Git for Windows의 32비트 버전에 <code>ca-certificates</code>와 <code>less</code>의 오래된 버전이 있어서 <a href="https://github.com/git-for-windows/MSYS2-packages/pull/49">바로잡았습니다.</a></li>
+            </ul>
+        </div>
+
+        <h2 id="v2.33.0(2)" class="collapsible">
+            v2.33.0 이후 v2.33.0(2)<br>
+            <small>변경 이력(2021년 8월 17일)</small>
+        </h2>
+        <div>
+            <h3>새로운 기능</h3>
+            <ul>
+                <li><a href="https://curl.haxx.se/changes.html#7_78_0">cURL v7.78.0</a>을 제공합니다.</li>
+                <li><a href="https://www.openssh.com/txt/release-8.7">OpenSSH v8.7p1</a>을 제공합니다.</li>
+            </ul>
+            <h3>버그 수정 사항</h3>
+            <ul>
+                <li>설치 프로그램이 &ldquo;proc을 호출할 수 없음&rdquo;이라는 오류 메시지를 보여주는, Windows 이전 버전에 영향을 미치는 <a href="https://github.com/git-for-windows/git/issues/3368">버그</a>가 <a href="https://github.com/git-for-windows/build-extra/pull/374">수정되었습니다.</a></li>
+            </ul>
+        </div>
+        
+        <h2 id="v2.33.0" class="collapsible">
+            v2.32.0(2) 이후 v2.33.0<br>
+            <small>변경 이력(2021년 7월 6일)</small>
+        </h2>
+        <div>
+            <h3>새로운 기능</h3>
+            <ul>
+                <li><a href="https://github.com/git/git/blob/v2.33.0/Documentation/RelNotes/2.33.0.txt">Git v2.33.0</a>을 제공합니다.</li>
+                <li><a href="http://search.cpan.org/dist/perl-5.34.0/pod/perldelta.pod">Perl v5.34.0</a>와 일부 업데이트된 Perl 모듈을 제공합니다.</li>
+                <li>이제 Git for Windows에 요청해 번들로 제공된 OpenSSH 실행 파일 대신 <code>PATH</code>에서 찾은 SSH를 <a href="https://github.com/git-for-windows/build-extra/pull/367">사용할 수 있습니다.</a></li>
+                <li><a href="https://github.com/microsoft/git-credential-manager-core/releases/tag/v2.0.498">Git Credential Manager Core v2.0.498.54650</a>을 제공합니다.</li>
+                <li>Experimental FSMonitor 패치는 <a href="https://github.com/git-for-windows/git/pull/3350">최신 버전으로</a> 교체했습니다.</li>
+                <li><a href="https://lists.gnupg.org/pipermail/gnupg-announce/2021q3/000461.html">GNU Privacy Guard v2.2.29</a>을 제공합니다.</li>
+            </ul>
+            <h3>버그 수정 사항</h3>
+            <ul>
+                <li>Windows 터미널 프로필 옵션이 선택된 상태에서 업그레이드를 할 경우 설치 프로그램은 더 이상 <a href="https://github.com/git-for-windows/git/issues/3312">오류 대화 상자를 보이지 않습니다.</a></li>
+                <li><a href="https://gerrit.googlesource.com/git-repo/"><code>git repo</code></a>와의 상호작용이 <a href="https://github.com/git-for-windows/git/pull/3328">개선되었습니다.</a></li>
+                <li>Git for Windows에 번들로 제공된 GNU Privacy Guard (GPG) 버전이 <a href="https://github.com/git-for-windows/git/issues/2888">64비트 설정에서 작동하지 않았는데</a> <a href="https://github.com/git-for-windows/MSYS2-packages/pull/46">수정했습니다.</a></li>
+            </ul>
+        </div>
+        
+        <h2 id="v2.32.0(2)" class="collapsible">
+            v2.32.0 이후 v2.32.0(2)<br>
+            <small>변경 이력(2021년 6월 7일)</small>
+        </h2>
+        <div>
+            <h3>새로운 기능</h3>
+            <ul>
+                <li>Windows 터미널 프로필은 이제 더 강력한 맞춤 설정을 위해 <a href="https://github.com/git-for-windows/build-extra/pull/356">GUID</a>로 식별됩니다.</li>
+                <li><a href="https://lists.gnupg.org/pipermail/gnupg-announce/2021q2/000460.html">GNU Privacy Guard v2.2.28</a>을 제공합니다.</li>
+                <li><a href="https://github.com/microsoft/git-credential-manager-core/releases/tag/v2.0.475">Git Credential Manager Core v2.0.475.64295</a>을 제공합니다.</li>
+                <li>클라이언트 인증서가 필요한 원격 HTTPS 저장소에 대한 액세스를 <a href="https://github.com/git-for-windows/git/issues/3292">활성화할 수 있습니다.</a> <a href="https://github.com/curl/curl/commit/54e747501626b81149b1b44949119d365db82004">cURL가 더 이상 기본값으로 클라이언트 인증서를 보내지 않으므로</a>이제는 활성화가 필요합니다.</li>
+            </ul>
+            <h3>버그 수정 사항</h3>
+            <ul>
+                <li>built-in file system watcher는 일부 시나리오에서 동작하지 않을 수 있었습니다. <a href="https://github.com/git-for-windows/git/pull/3263">이 버그는 수정했습니다.</a></li>
+                <li>network share에 설치된 portable Git 내부에서 원격 HTTPS 저장소에 <a href="https://github.com/git-for-windows/git/issues/3266">액세스할 수 없습니다.</a> 이 버그는 <a href="https://github.com/git-for-windows/MINGW-packages/pull/51">수정했습니다.</a></li>
+                <li>페이저에서 스크롤할 때 (예: <code>git log</code> 출력) <a href="https://github.com/git-for-windows/git/issues/3235">라인이 실수로 중복되었습니다.</a> 이 버그는 수정했습니다.</li>
+                <li><code>git subtree</code> 명령어가 <a href="https://github.com/git-for-windows/git/issues/3260">이전 릴리스에서 완전히 깨졌는데</a> 수정했습니다.</li>
+                <li>버그를 수정했습니다. 원격 작업이 <a href="https://github.com/git-for-windows/git/issues/3268">중단된 것처럼 보였습니다.</a> 그러나 숨겨진 콘솔에서 사용자 피드백을 기다리고 있었습니다.</li>
+                <li>버그를 수정했습니다. Experimental built-in file system watcher는 <a href="https://github.com/git-for-windows/git/issues/3262">작업 트리 경로에 non-ASCII character가 들어간 문제가 있었습니다.</a></li>
+            </ul>
+        </div>
+        
+        <h2 id="v2.32.0" class="collapsible">
+            v2.31.1 이후 v2.32.0<br>
+            <small>변경 이력(2021년 3월 27일)</small>
+        </h2>
+        <div>
+            <h3>새로운 기능</h3>
+            <ul>
+                <li><a href="https://github.com/git/git/blob/v2.32.0/Documentation/RelNotes/2.32.0.txt">Git v2.32.0</a>을 제공합니다.</li>
+                <li>설치 프로그램에서 <a href="https://github.com/git-for-windows/build-extra/pull/339">Windows 터미널 프로필</a> 설치를 제공합니다.</li>
+                <li><a href="https://curl.haxx.se/changes.html#7_77_0">cURL v7.77.0</a>을 제공합니다.</li>
+                <li><a href="https://pcre.org/news.txt">PCRE2 v10.37</a>을 제공합니다.</li>
+                <li>experimental built-in <a href="https://github.com/git-for-windows/git/discussions/3251">file system monitor</a>는 <a href="https://github.com/git-for-windows/build-extra/pull/351">설치 프로그램에서 실험적 옵션으로 나옵니다.</a></li>
+                <li><a href="https://github.com/microsoft/git-credential-manager-core/releases/tag/v2.0.474">Git Credential Manager Core v2.0.474.41365</a>을 제공합니다.</li>
+                <li>Sublime Text 4를 <a href="https://github.com/git-for-windows/build-extra/pull/355"> 설치 프로그램에서 감지합니다.</a></li>
+                <li><a href="https://github.com/jonas/tig/releases/tag/tig-2.5.4">tig v2.5.4</a>을 제공합니다.</li>
+            </ul>
+            <h3>버그 수정 사항</h3>
+            <ul>
+                <li>설치 프로그램에서 커스텀 에디터를 테스트하면 <a href="https://github.com/git-for-windows/git/issues/3155"> non-elevated mode에서 생성합니다</a>(예: 인스턴트가 이미 실행되고 있을 때 Atom 조작하기).</li>
+                <li>Git for Windows의 Portable Git 에디션이 사용하는 meta credential-helper는 <a href="https://github.com/git-for-windows/git/issues/3196">때때로 충돌했는데</a> 해결했습니다.</li>
+                <li>자동 업데이트 프로그램은 <a href="https://github.com/git-for-windows/build-extra/pull/347">더는 -rc0 버전으로의 다운그레이드를 제안하지 않습니다.</a></li>
+            </ul>
+        </div>
+        
+        <h2 id="v2.31.1" class="collapsible">
+            v2.31.0 이후 v2.31.1<br>
+            <small>변경 이력(2021년 3월 15일)</small>
+        </h2>
+        <div>
+            <h3>새로운 기능</h3>
+            <ul>
+                <li><a href="https://github.com/git/git/blob/v2.31.1/Documentation/RelNotes/2.31.1.txt">Git v2.31.1</a>을 제공합니다.</li>
+                <li><a href="https://lists.gnupg.org/pipermail/gnupg-announce/2021q1/000452.html">GNU Privacy Guard v2.2.27</a>을 제공합니다.</li>
+                <li><a href="https://www.openssl.org/news/openssl-1.1.1-notes.html">OpenSSL v1.1.1k</a>을 제공합니다.</li>
+                <li><a href="https://github.com/git-lfs/git-lfs/releases/tag/v2.13.3">Git LFS v2.13.3</a>을 제공합니다.</li>
+            </ul>
+            <h3>버그 수정 사항</h3>
+            <ul>
+                <li>Git Bash에서 <code>python3.exe</code>의 Windows Store 버전을 <a href="https://github.com/git-for-windows/git/issues/2675">실행할 수 있습니다.</a></li>
+            </ul>
+        </div>
+        
+        <h2 id="v2.31.0" class="collapsible">
+            v2.30.2 이후 v2.31.0<br>
+            <small>변경 이력(2021년 3월 9일)</small>
+        </h2>
+        <div>
+            <h3>새로운 기능</h3>
+            <ul>
+                <li><a href="https://github.com/git/git/blob/v2.31.0/Documentation/RelNotes/2.31.0.txt">Git v2.31.0</a>을 제공합니다.</li>
+                <li><a href="https://www.openssh.com/txt/release-8.5">OpenSSH v8.5p1</a>을 제공합니다.</li>
+                <li><a href="https://github.com/jonas/tig/releases/tag/tig-2.5.3">tig v2.5.3</a>을 제공합니다.</li>
+                <li>Git for Windows는 <a href="https://github.com/git-for-windows/git/pull/3082">experimental built-in file-system monitor</a>를 제공합니다. Watchman을 설치하고 <code>core.fsmonitor</code>를 설정할 필요가 없습니다. <code>feature.manyFiles=true</code>와 <code>feature.experimental=true</code>를 <em>모두</em> 설정하여 켤 수 있습니다(또는 <code>core.useBuiltinFSMonitor=true</code>로 직접 설정할 수 있습니다).</li>
+                <li><a href="https://github.com/microsoft/git-credential-manager-core/releases/tag/v2.0.394-beta">Git Credential Manager Core v2.0.394.50751</a>을 제공합니다.</li>
+                <li><a href="https://lists.gnupg.org/pipermail/gnutls-help/2021-March/004698.html">Git LFS v3.7.1</a>을 제공합니다.</li>
+            </ul>
+        </div>
+        
+        <h2 id="v2.30.2" class="collapsible">
+            v2.30.1 이후 v2.30.2<br>
+            <small>변경 이력(2021년 2월 9일)</small>
+        </h2>
+        <div>
+            <p>이 버전은 CVE-2021-21300(신뢰할 수 없는 소스로부터 clone하는 동안 코드 삽입이 가능한 버그)를 해결합니다.</p>
+            <h3>새로운 기능</h3>
+            <ul>
+                <li><a href="https://github.com/git/git/blob/v2.30.2/Documentation/RelNotes/2.30.2.txt">Git v2.30.2</a>을 제공합니다.</li>
+                <li><a href="https://pcre.org/news.txt">PCRE2 v10.36</a>을 제공합니다.</li>
+                <li><a href="https://github.com/jonas/tig/releases/tag/tig-2.5.2">tig v2.5.2</a>을 제공합니다.</li>
+                <li><a href="https://www.openssl.org/news/openssl-1.1.1-notes.html">OpenSSL v1.1.1j</a>을 제공합니다.</li>
+            </ul>
+        </div>
+        
+        <h2 id="v2.30.1" class="collapsible">
+            v2.30.0(2) 이후 v2.30.1<br>
+            <small>변경 이력(2021년 1월 14일)</small>
+        </h2>
+        <div>
+        <h3>새로운 기능</h3>
+            <ul>
+                <li><a href="https://github.com/git/git/blob/v2.30.1/Documentation/RelNotes/2.30.1.txt">Git v2.30.1</a>을 제공합니다.</li>
+                <li><a href="http://search.cpan.org/dist/perl-5.32.1/pod/perldelta.pod">Perl v5.32.1</a>을 제공합니다.</li>
+                <li><a href="https://curl.haxx.se/changes.html#7_75_0">cURL v7.75.0</a>을 제공합니다.</li>
+            </ul>
+        </div>
+    </div>
+    <script src="./js/toggle.js"></script>
+</body>
+</html>
